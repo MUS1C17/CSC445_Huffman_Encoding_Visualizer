@@ -1,0 +1,1 @@
+# CSC445_Huffman_Encoding_Visualizer
