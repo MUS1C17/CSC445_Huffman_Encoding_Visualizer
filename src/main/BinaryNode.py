@@ -1,8 +1,8 @@
-'''
- This is BinaryNode class that represents each node in a tree
-'''
-class BinaryNode:
 
+class BinaryNode:
+    '''
+    This is BinaryNode class that represents each node in a tree
+    '''
     def __init__(self, value):
         '''Constructor that takes in a value that will be stored in the node. 
         Right and left nodes will be none by default so setter methods can be called'''
