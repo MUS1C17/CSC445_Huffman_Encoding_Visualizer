@@ -9,6 +9,13 @@ class BinaryNode:
         self.value = value
         self.leftNode = None
         self.rightNode = None
+
+    def __lt__(self, comparedValue):
+        '''This method is used to get rid of the TypeError'''
+        return self.value < comparedValue.value
+        
+    def __str__(self):
+        return f"Value: {self.getValue()}\n Right Node: {self.getRight()}\n Left Node: {self.getRight()}"
         
     def getValue(self):
         '''Returns current value that is stored in the Node'''
@@ -26,7 +33,7 @@ class BinaryNode:
         '''Setter for a left Node'''
         self.leftNode = leftNode
 
-    def setLeft(self, rightNode):
+    def setRight(self, rightNode):
         '''Setter for the right node'''
         self.rightNode = rightNode
     

@@ -1,6 +1,5 @@
 
 class LinkedBinaryTree:
-    
     def __init__(self, root):
         '''Constructor that takes root of the tree (BinaryNode).
         Size variable shows number of nodes in the tree.
@@ -18,6 +17,7 @@ class LinkedBinaryTree:
     
     def isEmpty(self):
         '''Method to check if tree is emtpy'''
-        return self.size == 0
-    
-    
+        return self.size == 0    
+
+    def drawTree(self):
+        
