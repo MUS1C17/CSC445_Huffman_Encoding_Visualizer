@@ -1,9 +1,12 @@
 import sys
-from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QHBoxLayout, QTableWidget, QTableWidgetItem
+from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QHBoxLayout, QTableWidget, QTableWidgetItem, QHeaderView
 from PyQt5.QtGui import QFont
 from TextBox import TextBox
 from Button import Button
 from HuffmanTableGenerator import *
+from LinkedBinaryTree import *
+from PyQt5.QtWidgets import QSizePolicy
+
 class MainWindow(QMainWindow):
     '''This is a MainWindow class for front end.
     It will have all interactions with front end'''
@@ -50,9 +53,23 @@ class MainWindow(QMainWindow):
 
         #Hide vertical headers
         self.huffmanTableWidget.verticalHeader().hide()
+
+         # 1) shrink columns to fit headers & data
+        header = self.huffmanTableWidget.horizontalHeader()
+        header.setSectionResizeMode(QHeaderView.ResizeToContents)
+        
+        # 2) let the table itself only take as much space as needed
+        self.huffmanTableWidget.setSizePolicy(
+            QSizePolicy.Minimum,
+            QSizePolicy.Preferred
+        )
+
         self.bottomHorizontalPanel.addWidget(self.huffmanTableWidget)
         self.decodeButton.setEnabled(False)
+
         self.fillHuffmanTableWidgetWithData()
+        
+        self.bottomHorizontalPanel.addWidget(self.createTreeEncodingWidget())
 
     def fillHuffmanTableWidgetWithData(self):
         characterData = self.huffmanTableGenerator.getListOfCharacters()
@@ -60,6 +77,18 @@ class MainWindow(QMainWindow):
         for rowNumber in range(len(characterData)):
             self.huffmanTableWidget.setItem(rowNumber, 0, QTableWidgetItem(f"{characterData[rowNumber]}"))
             self.huffmanTableWidget.setItem(rowNumber, 1, QTableWidgetItem(f"{frequencyData[rowNumber]}"))
+        
+        #root = self.huffmanTableGenerator.updatePriorityQueue(self.huffmanTableGenerator.createPriorityQueue(self.huffmanTableGenerator.getCharacterAndFrequencyDictionary()))
+        #tree_widget = create_tree_widget(root, width=400, height=400)
+        #self.bottomHorizontalPanel.addWidget(tree_widget)
+
+    def createTreeEncodingWidget(self) -> QWidget:
+        priorityQueue = self.huffmanTableGenerator.createPriorityQueue(self.huffmanTableGenerator.getCharacterAndFrequencyDictionary())
+        rootNode = self.huffmanTableGenerator.updatePriorityQueue(priorityQueue)
+        treeWidget = create_tree_widget(rootNode, width=1000, height=1000)
+        treeWidget.setMinimumSize(1000, 1000)
+        treeWidget.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        return treeWidget
 
 def main():
     mainApp = QApplication(sys.argv)

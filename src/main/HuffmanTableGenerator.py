@@ -14,13 +14,13 @@ class HuffmanTableGenerator:
         
         textInputList = list(textInput)
         if len(textInput) == 0:
-            print("No text was provided") #TODO: MAKE RETURN
+            print("No text was provided") #TODO: Remove
         for character in textInputList:
             if character in self.characterAndFrequencyDictionary:
                 self.characterAndFrequencyDictionary[character] = int(self.characterAndFrequencyDictionary.get(character)) + 1
             else:
                 self.characterAndFrequencyDictionary.update({character : 1})
-        print(self.characterAndFrequencyDictionary) #TODO: MAKE RETURN
+        print(self.characterAndFrequencyDictionary) #TODO: Remove
         return self.characterAndFrequencyDictionary
     
     def getCharacterAndFrequencyDictionary(self):
@@ -43,14 +43,15 @@ class HuffmanTableGenerator:
             priorityQueue.put((frequency, BinaryNode(character)))
         return priorityQueue
 
-    def updatePriorityQueue(self, priorityQueue):
+    def updatePriorityQueue(self, priorityQueue: PriorityQueue) -> BinaryNode:
         '''This method is using recursion to update priority queue.
         It removes two elements with lowest frequencies from the queue and
         Creates a node of them. Then, the node gets addded back to the priority queue.
         The proccess repeats until queue has one element which will be the root node
         of a tree'''
         if priorityQueue.qsize() == 1:
-            return priorityQueue
+            frequency, root = priorityQueue.get()
+            return root
         else:
             #Get two characters with smallest frequencies
             #frequencyOne, characterOne = priorityQueue.get()
@@ -66,26 +67,26 @@ class HuffmanTableGenerator:
             #node.setRight((frequencyOne, characterOne))
             #node.setLeft((frequencyTwo, characterTwo))
 
-            node = BinaryNode("Node")
-
-            node.setLeft((frequencyOne, nodeOne))
-            node.setRight((frequencyTwo, nodeTwo))
-
+            #Create combined node
+            combined = BinaryNode("Node")
+            combined.frequency = frequencyOne + frequencyTwo
+            combined.setLeft(nodeOne)
+            combined.setRight(nodeTwo)
 
             #update priority queue by adding new element with sum of two frequencies and node
             #priorityQueue.put((int(frequencyOne) + int(frequencyTwo), "Node"))
-            priorityQueue.put((int(frequencyOne) + int(frequencyTwo), node))
+            priorityQueue.put((combined.frequency, combined))
             
             print("------------------------------------------------------")
             print(priorityQueue.queue)
             print()
             print(f"nodeOne: {nodeOne}")
             print(f"NodeTwo: {nodeTwo}")
-            print(f"node: {node}")
+            print(f"node: {combined}")
             print("------------------------------------------------------")
 
             #Call recursion
-            self.updatePriorityQueue(priorityQueue)
+            return self.updatePriorityQueue(priorityQueue)
 
 def main():
     myHTG = HuffmanTableGenerator()
