@@ -26,6 +26,9 @@ class HuffmanTableGenerator:
     def getCharacterAndFrequencyDictionary(self):
         return self.characterAndFrequencyDictionary
     
+    def getTreeRoot(self):
+        return self.root
+    
     
     def getListOfCharacters(self):
         '''Returns Characters from dictionary in list form'''
@@ -50,8 +53,8 @@ class HuffmanTableGenerator:
         The proccess repeats until queue has one element which will be the root node
         of a tree'''
         if priorityQueue.qsize() == 1:
-            frequency, root = priorityQueue.get()
-            return root
+            frequency, self.root = priorityQueue.get()
+            return self.root
         else:
             #Get two characters with smallest frequencies
             #frequencyOne, characterOne = priorityQueue.get()
@@ -68,7 +71,7 @@ class HuffmanTableGenerator:
             #node.setLeft((frequencyTwo, characterTwo))
 
             #Create combined node
-            combined = BinaryNode("Node")
+            combined = BinaryNode(f"{frequencyOne + frequencyTwo}")
             combined.frequency = frequencyOne + frequencyTwo
             combined.setLeft(nodeOne)
             combined.setRight(nodeTwo)
@@ -87,6 +90,38 @@ class HuffmanTableGenerator:
 
             #Call recursion
             return self.updatePriorityQueue(priorityQueue)
+            
+    def generateCodeForCharacters(self, root: BinaryNode) -> dict[str,str]:
+        """
+        Given the root of a built Huffman tree, return a dict mapping
+        each leaf‐character to its 0/1 code.
+        """
+        codes: dict[str, str] = {}
+        self.collectCodes(root, prefix="", codes=codes)
+        return codes
+    
+    def collectCodes(self, node: BinaryNode, prefix: str, codes: dict[str, str]):
+        """
+        Recursive helper: 
+          - if `node` is a leaf, record codes[node.value] = prefix
+          - otherwise descend left with prefix+"0" and right with prefix+"1"
+        """
+        # detect leaf: no left and no right
+        if node.leftNode is None and node.rightNode is None:
+            # node.value is your character
+            codes[node.value] = prefix
+            return
+
+        # internal node: go left
+        if node.leftNode is not None:
+            self.collectCodes(node.leftNode,  prefix + "0", codes)
+
+        # then go right
+        if node.rightNode is not None:
+            self.collectCodes(node.rightNode, prefix + "1", codes)
+
+
+
 
 def main():
     myHTG = HuffmanTableGenerator()

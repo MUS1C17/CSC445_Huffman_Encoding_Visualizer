@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QWidget, QApplication
 from PyQt5.QtGui import QPainter
 import sys
 from HuffmanTableGenerator import *
+import math
 
 class TreeWidget(QWidget):
     '''Draws a binary tree using the leaf-based tidy layout.'''
@@ -13,6 +14,22 @@ class TreeWidget(QWidget):
     def __init__(self, root: BinaryNode):
         super().__init__()
         self.root = layout(root)
+        max_x = self._max_x(self.root)
+        max_y = self._max_y(self.root)
+        self.setMinimumSize(int(max_x * self.H_SPACING + 2*self.RADIUS),
+                            int(max_y * self.V_SPACING + 2*self.RADIUS))
+
+    def _max_x(self, node):
+        xs = [node.x]
+        for c in node.children:
+            xs.append(self._max_x(c))
+        return max(xs)
+
+    def _max_y(self, node):
+        ys = [node.y]
+        for c in node.children:
+            ys.append(self._max_y(c))
+        return max(ys)
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -26,6 +43,19 @@ class TreeWidget(QWidget):
             cx = int(c.x * self.H_SPACING + self.RADIUS)
             cy = int(c.y * self.V_SPACING + self.RADIUS)
             painter.drawLine(px, py, cx, cy)
+            # label 0/1 offset off the line
+            label = '0' if c is node.leftNode else '1'
+            mx, my = (px+cx)/2, (py+cy)/2
+            dx, dy = cx-px, cy-py
+            length = math.hypot(dx, dy)
+            if length == 0:
+                ux, uy = 0, -1
+            else:
+                ux, uy = -dy/length, dx/length
+            offset = self.RADIUS
+            lx = mx + ux * offset
+            ly = my + uy * offset
+            painter.drawText(int(lx), int(ly), label)
             self._draw(c, painter)
         painter.drawEllipse(px - self.RADIUS, py - self.RADIUS,
                             2 * self.RADIUS, 2 * self.RADIUS)
