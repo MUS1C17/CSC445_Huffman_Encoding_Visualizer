@@ -59,60 +59,61 @@ class MainWindow(QMainWindow):
 
     def generateHuffmanTableWidget(self, text):
         self.clearBottomPanel()
-        self.huffmanTableGenerator = HuffmanTableGenerator()
+        if len(text) != 0:
+            self.huffmanTableGenerator = HuffmanTableGenerator()
 
-        freq_dict = self.huffmanTableGenerator.createDictionary(text)
+            freq_dict = self.huffmanTableGenerator.createDictionary(text)
 
-        # Prepare data lists
-        characters = list(freq_dict.keys())
-        frequencies = list(freq_dict.values())
-        rowCount = len(characters)
+            # Prepare data lists
+            characters = list(freq_dict.keys())
+            frequencies = list(freq_dict.values())
+            rowCount = len(characters)
 
-        self.huffmanTableWidget = QTableWidget(rowCount, 3)
-        self.huffmanTableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
+            self.huffmanTableWidget = QTableWidget(rowCount, 3)
+            self.huffmanTableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
-        #Create columns and name them accordingly
-        self.huffmanTableWidget.setColumnCount(3)
-        self.huffmanTableWidget.setHorizontalHeaderLabels(["Charcter", "Frequency", "Code"])
-    
-        #Hide vertical headers
-        self.huffmanTableWidget.verticalHeader().hide()
+            #Create columns and name them accordingly
+            self.huffmanTableWidget.setColumnCount(3)
+            self.huffmanTableWidget.setHorizontalHeaderLabels(["Charcter", "Frequency", "Code"])
+        
+            #Hide vertical headers
+            self.huffmanTableWidget.verticalHeader().hide()
 
-         # Column sizing: char/freq auto, code fixed for 8 chars
-        header = self.huffmanTableWidget.horizontalHeader()
-        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
-        avg_char_w = self.huffmanTableWidget.fontMetrics().averageCharWidth()
-        code_width = avg_char_w * 8 + 20
-        header.resizeSection(2, int(code_width))
+            # Column sizing: char/freq auto, code fixed for 8 chars
+            header = self.huffmanTableWidget.horizontalHeader()
+            header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
+            header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
+            avg_char_w = self.huffmanTableWidget.fontMetrics().averageCharWidth()
+            code_width = avg_char_w * 8 + 20
+            header.resizeSection(2, int(code_width))
 
-        # Size policy to hug contents
-        self.huffmanTableWidget.setSizePolicy(
-            QSizePolicy.Minimum, QSizePolicy.Preferred
-        )
-
-        self.bottomHorizontalPanel.addWidget(self.huffmanTableWidget)
-        # Build tree and codes
-        pq = self.huffmanTableGenerator.createPriorityQueue(freq_dict)
-        root = self.huffmanTableGenerator.updatePriorityQueue(pq)
-        codes = self.huffmanTableGenerator.generateCodeForCharacters(root)
-
-        # Fill table rows
-        for row, ch in enumerate(characters):
-            self.huffmanTableWidget.setItem(
-                row, 0, QTableWidgetItem(ch)
-            )
-            self.huffmanTableWidget.setItem(
-                row, 1, QTableWidgetItem(str(frequencies[row]))
-            )
-            code = codes.get(ch, "")
-            self.huffmanTableWidget.setItem(
-                row, 2, QTableWidgetItem(code)
+            # Size policy to hug contents
+            self.huffmanTableWidget.setSizePolicy(
+                QSizePolicy.Minimum, QSizePolicy.Preferred
             )
 
-        # Create and add tree widget
-        scroll_tree = create_scrollable_tree(root)
-        self.bottomHorizontalPanel.addWidget(scroll_tree)
+            self.bottomHorizontalPanel.addWidget(self.huffmanTableWidget)
+            # Build tree and codes
+            pq = self.huffmanTableGenerator.createPriorityQueue(freq_dict)
+            root = self.huffmanTableGenerator.updatePriorityQueue(pq)
+            codes = self.huffmanTableGenerator.generateCodeForCharacters(root)
+
+            # Fill table rows
+            for row, ch in enumerate(characters):
+                self.huffmanTableWidget.setItem(
+                    row, 0, QTableWidgetItem(ch)
+                )
+                self.huffmanTableWidget.setItem(
+                    row, 1, QTableWidgetItem(str(frequencies[row]))
+                )
+                code = codes.get(ch, "")
+                self.huffmanTableWidget.setItem(
+                    row, 2, QTableWidgetItem(code)
+                )
+
+            # Create and add tree widget
+            scroll_tree = create_scrollable_tree(root)
+            self.bottomHorizontalPanel.addWidget(scroll_tree)
 
 
     def fillHuffmanTableWidgetWithData(self):
