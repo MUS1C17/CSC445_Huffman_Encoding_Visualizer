@@ -9,7 +9,7 @@ class TreeWidget(QWidget):
     '''Draws a binary tree using the leaf-based tidy layout.'''
     H_SPACING = 80   # horizontal pixels per unit x
     V_SPACING = 100  # vertical pixels per unit y
-    RADIUS = 15      # node circle radius
+    RADIUS = 20      # node circle radius
 
     def __init__(self, root: BinaryNode):
         super().__init__()
@@ -37,30 +37,73 @@ class TreeWidget(QWidget):
         self._draw(self.root, painter)
 
     def _draw(self, node, painter):
-        px = int(node.x * self.H_SPACING + self.RADIUS)
-        py = int(node.y * self.V_SPACING + self.RADIUS)
+        # compute center of this node
+        px = node.x * self.H_SPACING + self.RADIUS
+        py = node.y * self.V_SPACING + self.RADIUS
+
+        # draw edges to children
         for c in node.children:
-            cx = int(c.x * self.H_SPACING + self.RADIUS)
-            cy = int(c.y * self.V_SPACING + self.RADIUS)
-            painter.drawLine(px, py, cx, cy)
-            # label 0/1 offset off the line
-            label = '0' if c is node.leftNode else '1'
-            mx, my = (px+cx)/2, (py+cy)/2
-            dx, dy = cx-px, cy-py
-            length = math.hypot(dx, dy)
-            if length == 0:
-                ux, uy = 0, -1
+            cx = c.x * self.H_SPACING + self.RADIUS
+            cy = c.y * self.V_SPACING + self.RADIUS
+
+            dx = cx - px
+            dy = cy - py
+            dist = math.hypot(dx, dy)
+            if dist == 0:
+                ux, uy = 0, 0
             else:
-                ux, uy = -dy/length, dx/length
-            offset = self.RADIUS
-            lx = mx + ux * offset
-            ly = my + uy * offset
-            painter.drawText(int(lx), int(ly), label)
+                ux, uy = dx / dist, dy / dist
+
+            # offset start/end by circle radius
+            start_x = px + ux * self.RADIUS
+            start_y = py + uy * self.RADIUS
+            end_x   = cx - ux * self.RADIUS
+            end_y   = cy - uy * self.RADIUS
+
+            painter.drawLine(
+                int(start_x), int(start_y),
+                int(end_x),   int(end_y)
+            )
+
+            # draw 0/1 label centered on the line
+            label = '0' if c is node.leftNode else '1'
+            mx, my = (start_x + end_x) / 2, (start_y + end_y) / 2
+            # perpendicular unit vector
+            perp_x, perp_y = -uy, ux
+            # offset away from line
+            ox = perp_x * (self.RADIUS / 2)
+            oy = perp_y * (self.RADIUS / 2)
+            tx = mx + ox
+            ty = my + oy
+            # measure text size
+            fm = painter.fontMetrics()
+            w = fm.horizontalAdvance(label)
+            h = fm.height()
+            # draw centered
+            painter.drawText(
+                int(tx - w/2),
+                int(ty + h/4),
+                label
+            )
+
+            # recurse
             self._draw(c, painter)
-        painter.drawEllipse(px - self.RADIUS, py - self.RADIUS,
-                            2 * self.RADIUS, 2 * self.RADIUS)
-        painter.drawText(px - self.RADIUS//2, py + self.RADIUS//2,
-                         str(node.value))
+
+        # draw node circle
+        painter.drawEllipse(
+            int(px - self.RADIUS), int(py - self.RADIUS),
+            2 * self.RADIUS, 2 * self.RADIUS
+        )
+        # draw node value centered
+        val = str(node.value)
+        fm = painter.fontMetrics()
+        w = fm.horizontalAdvance(val)
+        h = fm.height()
+        painter.drawText(
+            int(px - w/2),
+            int(py + h/4),
+            val
+        )
 
 
 def create_tree_widget(root: BinaryNode, width: int = 800, height: int = 600) -> TreeWidget:

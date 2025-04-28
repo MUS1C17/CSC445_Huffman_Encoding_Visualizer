@@ -9,6 +9,7 @@ from HuffmanTableGenerator import *
 from LinkedBinaryTree import *
 from PyQt5.QtWidgets import QSizePolicy
 from ScrollableTreeWidget import *
+from Table import *
 
 class MainWindow(QMainWindow):
     '''This is a MainWindow class for front end.
@@ -19,7 +20,7 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("Huffman Encoding Visualizer")
         self.setGeometry(600, 300, 900, 700)
-        self.setStyleSheet("background-color: #8FCB9B;")
+        self.setStyleSheet("background-color: #9FBBCC;")
 
         # Create a central widget and a layout
         self.centralWidget= QWidget()
@@ -54,7 +55,7 @@ class MainWindow(QMainWindow):
         self.mainPanel.addLayout(self.topHorizontalPanel)
         self.mainPanel.addLayout(self.middleHorizontalPanel)
         self.mainPanel.addLayout(self.bottomHorizontalPanel)
-        
+    
         self.setCentralWidget(self.centralWidget)
 
     def generateHuffmanTableWidget(self, text):
@@ -69,28 +70,9 @@ class MainWindow(QMainWindow):
             frequencies = list(freq_dict.values())
             rowCount = len(characters)
 
-            self.huffmanTableWidget = QTableWidget(rowCount, 3)
-            self.huffmanTableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
-
-            #Create columns and name them accordingly
-            self.huffmanTableWidget.setColumnCount(3)
+            self.huffmanTableWidget = Table(rowCount, 3)
             self.huffmanTableWidget.setHorizontalHeaderLabels(["Charcter", "Frequency", "Code"])
-        
-            #Hide vertical headers
-            self.huffmanTableWidget.verticalHeader().hide()
 
-            # Column sizing: char/freq auto, code fixed for 8 chars
-            header = self.huffmanTableWidget.horizontalHeader()
-            header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
-            header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
-            avg_char_w = self.huffmanTableWidget.fontMetrics().averageCharWidth()
-            code_width = avg_char_w * 8 + 20
-            header.resizeSection(2, int(code_width))
-
-            # Size policy to hug contents
-            self.huffmanTableWidget.setSizePolicy(
-                QSizePolicy.Minimum, QSizePolicy.Preferred
-            )
 
             self.bottomHorizontalPanel.addWidget(self.huffmanTableWidget)
             # Build tree and codes
@@ -110,6 +92,17 @@ class MainWindow(QMainWindow):
                 self.huffmanTableWidget.setItem(
                     row, 2, QTableWidgetItem(code)
                 )
+            
+            header = self.huffmanTableWidget.horizontalHeader()
+            col_count = self.huffmanTableWidget.columnCount()
+            total_col_w = sum(header.sectionSize(i) for i in range(col_count))
+            vert_header_w = self.huffmanTableWidget.verticalHeader().width()
+            frame_w = self.huffmanTableWidget.frameWidth() * 2
+
+            max_table_w = total_col_w + vert_header_w + frame_w
+
+            # Now set that as the hard maximum
+            self.huffmanTableWidget.setMaximumWidth(max_table_w)
 
             # Create and add tree widget
             scroll_tree = create_scrollable_tree(root)

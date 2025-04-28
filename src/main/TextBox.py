@@ -10,7 +10,7 @@ class TextBox(QTextEdit):
                            border: 2px solid;
                            border-color: #12130F;
                             border-radius: 15px;
-                            background: #5B9279; 
+                            background: #7A9CC6; 
                             padding: 0px;             
                             margin: 0px;
                            }
