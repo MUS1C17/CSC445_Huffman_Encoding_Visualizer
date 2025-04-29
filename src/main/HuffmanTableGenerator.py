@@ -56,28 +56,14 @@ class HuffmanTableGenerator:
             frequency, self.root = priorityQueue.get()
             return self.root
         else:
-            #Get two characters with smallest frequencies
-            #frequencyOne, characterOne = priorityQueue.get()
-            #frequencyTwo, characterTwo = priorityQueue.get()
-
             frequencyOne, nodeOne = priorityQueue.get()
             frequencyTwo, nodeTwo = priorityQueue.get()
-
-
-            #Create new node with frequency sum of two smallest and string called "Node"
-            #node = BinaryNode((int(frequencyOne) + int(frequencyTwo), "Node"))
-            #Set children of the node to be rarest characters from priority queue
-            #node.setRight((frequencyOne, characterOne))
-            #node.setLeft((frequencyTwo, characterTwo))
 
             #Create combined node
             combined = BinaryNode(f"{frequencyOne + frequencyTwo}")
             combined.frequency = frequencyOne + frequencyTwo
             combined.setLeft(nodeOne)
             combined.setRight(nodeTwo)
-
-            #update priority queue by adding new element with sum of two frequencies and node
-            #priorityQueue.put((int(frequencyOne) + int(frequencyTwo), "Node"))
             priorityQueue.put((combined.frequency, combined))
             
             print("------------------------------------------------------")
@@ -87,8 +73,6 @@ class HuffmanTableGenerator:
             print(f"NodeTwo: {nodeTwo}")
             print(f"node: {combined}")
             print("------------------------------------------------------")
-
-            #Call recursion
             return self.updatePriorityQueue(priorityQueue)
             
     def generateCodeForCharacters(self, root: BinaryNode) -> dict[str,str]:
@@ -106,17 +90,13 @@ class HuffmanTableGenerator:
           - if `node` is a leaf, record codes[node.value] = prefix
           - otherwise descend left with prefix+"0" and right with prefix+"1"
         """
-        # detect leaf: no left and no right
         if node.leftNode is None and node.rightNode is None:
-            # node.value is your character
             codes[node.value] = prefix
             return
 
-        # internal node: go left
         if node.leftNode is not None:
             self.collectCodes(node.leftNode,  prefix + "0", codes)
-
-        # then go right
+            
         if node.rightNode is not None:
             self.collectCodes(node.rightNode, prefix + "1", codes)
 

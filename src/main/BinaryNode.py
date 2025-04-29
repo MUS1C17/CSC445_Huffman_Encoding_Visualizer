@@ -48,8 +48,6 @@ class BinaryNode:
         '''Setter for the right node'''
         self.rightNode = rightNode
     
-
-    # Layout functions following the layout(tree)->addmods(setup(tree)) pattern
 def compute_leaves(tree):
     '''Annotate each node with the count of leaves in its subtree.'''
     if not tree.children:

@@ -14,8 +14,6 @@ class ScrollableTreeWidget(QScrollArea):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
-# Usage helper
-
 def create_scrollable_tree(root: BinaryNode) -> ScrollableTreeWidget:
     '''Return a scrollable tree widget for embedding.'''
     return ScrollableTreeWidget(root)
