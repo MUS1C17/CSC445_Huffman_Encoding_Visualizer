@@ -91,8 +91,6 @@ class TreeWidget(QWidget):
             self._draw(c, painter)
 
         painter.setBrush(QBrush(QColor("#7A9CC6")))
-
-        # (optionally) ensure your outline stays a contrasting color:
         painter.setPen(QColor("#000000"))
 
         # draw node circle
@@ -130,7 +128,6 @@ def show_tree(root: BinaryNode, width: int = 800, height: int = 600):
     sys.exit(app.exec_())
 
 if __name__ == '__main__':
-    # Example usage
     nodes = [BinaryNode(str(i)) for i in range(1, 51)]
     for i, n in enumerate(nodes):
         l, r = 2*i + 1, 2*i + 2

@@ -43,7 +43,6 @@ class MainWindow(QMainWindow):
         self.decodeButton = Button("Decode")
         self.topHorizontalPanel.addWidget(self.decodeButton)
         self.decodeButton.clicked.connect(lambda: self.generateHuffmanTableWidget(self.textBox.toPlainText()))
-        # Set the central widget for the main window
 
         #Create File upload
         self.filePathLine = LineEdit()
@@ -121,8 +120,6 @@ class MainWindow(QMainWindow):
             frame_w = self.huffmanTableWidget.frameWidth() * 2
 
             max_table_w = total_col_w + vert_header_w + frame_w
-
-            # Now set that as the hard maximum
             self.huffmanTableWidget.setMaximumWidth(max_table_w)
 
             # Create and add tree widget
@@ -175,18 +172,16 @@ class MainWindow(QMainWindow):
             pass
 
     def clearBottomPanel(self):
-        """Remove all widgets from the bottom panel."""
-        # Take each item out of the layout and delete its widget
+        """Remove all widgets from the bottom panel"""
         layout = self.bottomHorizontalPanel
         while layout.count():
             item = layout.takeAt(0)
             widget = item.widget()
             if widget:
-                # this removes it from the GUI and schedules it for deletion
                 widget.setParent(None)
 
     def onShowOriginal(self):
-        """Replace the bit-string with the original text."""
+        """Replace the bit-string with the original text"""
         self.encodedTextBox.setPlainText(self.currentInputText)
 
 def main():

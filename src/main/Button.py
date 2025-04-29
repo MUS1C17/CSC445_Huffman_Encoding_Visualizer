@@ -21,25 +21,21 @@ class Button(QPushButton):
         
         self.changeColor(color="lightgrey")
 
-        #button shadow grading.
         self.expand = 0
-        self.maxExpand = 4 # expanding size - #optional
-        self.init_s_color = "#3F3F3F" #optional
-        self.end_s_color = "#FFFF33"  #optional
+        self.maxExpand = 4 
+        self.init_s_color = "#3F3F3F" 
+        self.end_s_color = "#FFFF33"
         self.garding_s_seq = self.gradeColor(c1=self.init_s_color, 
 									        c2=self.end_s_color, 
 									        steps=self.maxExpand)
-        #button color grading.
+
         self.grade = 0
-        self.maxGrade=15 # gradding size - #optional
-        self.init_bg_color = "lightgrey"   #optional
-        self.end_bg_color = "darkgrey"     #optional
+        self.maxGrade=15 
+        self.init_bg_color = "lightgrey"   
+        self.end_bg_color = "darkgrey"    
         self.gradding_bg_seq = self.gradeColor( c1=self.init_bg_color, 
 									        	c2=self.end_bg_color, 
 									        	steps=self.maxGrade)
-
-        '''TODO: For some reason it is very difficult to make a button round
-        so this is a note to finish it later here:'''
         self.setStyleSheet("""
             QPushButton {
                 border: 2px solid #12130F;
@@ -55,8 +51,6 @@ class Button(QPushButton):
                 background-color: #1E4F83;
             }
         """)
-        #self.clicked.connect(self.animateButton)
-
 
     def changeColor(self, color=(255,255,255)):
         palette = self.palette()
@@ -68,7 +62,6 @@ class Button(QPushButton):
 
     def enterEvent(self, e) -> None:
         self.mouse = 'on'
-        #self.setGraphicsEffect(self.shadow)
         self.tm.start(15, self)
 
     def leaveEvent(self, e) -> None:
