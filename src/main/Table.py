@@ -20,7 +20,7 @@ class Table(QTableWidget):
                             """)
         
         header = self.horizontalHeader()
-        #header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
         header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
-        #header.setSectionResizeMode(2, QHeaderView.Stretch)
+        header.setSectionResizeMode(2, QHeaderView.Stretch)
         header.setHighlightSections(False)  # so clicking a header doesn't "select" it

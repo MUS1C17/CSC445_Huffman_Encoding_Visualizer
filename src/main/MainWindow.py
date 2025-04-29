@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QHBoxLayout, QTableWidget, QTableWidgetItem, QHeaderView, QLineEdit, QFileDialog, QMessageBox, QAbstractItemView
+from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QHBoxLayout, QTableWidget, QTableWidgetItem, QHeaderView, QLineEdit, QFileDialog, QMessageBox, QAbstractItemView,  QPlainTextEdit
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QScrollArea
 from PyQt5.QtCore import Qt
@@ -10,6 +10,8 @@ from LinkedBinaryTree import *
 from PyQt5.QtWidgets import QSizePolicy
 from ScrollableTreeWidget import *
 from Table import *
+from PlainTextEdit import *
+from LineEdit import *
 
 class MainWindow(QMainWindow):
     '''This is a MainWindow class for front end.
@@ -27,6 +29,7 @@ class MainWindow(QMainWindow):
         self.mainPanel = QVBoxLayout(self.centralWidget)
         self.topHorizontalPanel = QHBoxLayout()
         self.middleHorizontalPanel = QHBoxLayout()
+        self.encodedPanel = QHBoxLayout()
         self.bottomHorizontalPanel = QHBoxLayout()
         
         # Create a text box and add it to the layout
@@ -42,7 +45,7 @@ class MainWindow(QMainWindow):
         # Set the central widget for the main window
 
         #Create File upload
-        self.filePathLine = QLineEdit()
+        self.filePathLine = LineEdit()
         self.filePathLine.setReadOnly(True)
         self.middleHorizontalPanel.addWidget(self.filePathLine)
 
@@ -51,15 +54,32 @@ class MainWindow(QMainWindow):
         self.fileUploadButton.clicked.connect(self.uploadFile)
         self.middleHorizontalPanel.addWidget(self.fileUploadButton)
 
+        #Create QPlainTextEdit
+        self.encodedTextBox = PlainTextEdit()
+        self.encodedTextBox.setReadOnly(True)
+        self.encodedTextBox.setPlaceholderText("Encoded bits will appear here…")
+        self.encodedTextBox.setLineWrapMode(QPlainTextEdit.NoWrap)
+        self.encodedTextBox.setMinimumHeight(50)
+        self.encodedTextBox.setMaximumWidth(700)
+        self.encodedPanel.addWidget(self.encodedTextBox)
+    
+        #Create Encode button
+        self.showOriginalButton = Button("Encode")
+        self.showOriginalButton.clicked.connect(self.onShowOriginal)
+        self.encodedPanel.addWidget(self.showOriginalButton)
 
         self.mainPanel.addLayout(self.topHorizontalPanel)
         self.mainPanel.addLayout(self.middleHorizontalPanel)
+        self.mainPanel.addLayout(self.encodedPanel)
         self.mainPanel.addLayout(self.bottomHorizontalPanel)
-    
+
         self.setCentralWidget(self.centralWidget)
+        self.currentInputText = ""
 
     def generateHuffmanTableWidget(self, text):
         self.clearBottomPanel()
+        self.currentInputText = text
+
         if len(text) != 0:
             self.huffmanTableGenerator = HuffmanTableGenerator()
 
@@ -107,6 +127,9 @@ class MainWindow(QMainWindow):
             # Create and add tree widget
             scroll_tree = create_scrollable_tree(root)
             self.bottomHorizontalPanel.addWidget(scroll_tree)
+
+            encoded_bits = "".join(codes.get(ch, "") for ch in text)
+            self.encodedTextBox.setPlainText(encoded_bits)
 
 
     def fillHuffmanTableWidgetWithData(self):
@@ -160,6 +183,10 @@ class MainWindow(QMainWindow):
             if widget:
                 # this removes it from the GUI and schedules it for deletion
                 widget.setParent(None)
+
+    def onShowOriginal(self):
+        """Replace the bit-string with the original text."""
+        self.encodedTextBox.setPlainText(self.currentInputText)
 
 def main():
     mainApp = QApplication(sys.argv)

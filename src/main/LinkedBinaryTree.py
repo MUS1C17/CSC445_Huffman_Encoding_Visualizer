@@ -1,6 +1,7 @@
 from BinaryNode import *
 from PyQt5.QtWidgets import QWidget, QApplication
-from PyQt5.QtGui import QPainter
+from PyQt5.QtGui import QPainter, QColor, QBrush
+from PyQt5.QtCore import Qt
 import sys
 from HuffmanTableGenerator import *
 import math
@@ -89,11 +90,19 @@ class TreeWidget(QWidget):
             # recurse
             self._draw(c, painter)
 
+        painter.setBrush(QBrush(QColor("#7A9CC6")))
+
+        # (optionally) ensure your outline stays a contrasting color:
+        painter.setPen(QColor("#000000"))
+
         # draw node circle
         painter.drawEllipse(
             int(px - self.RADIUS), int(py - self.RADIUS),
             2 * self.RADIUS, 2 * self.RADIUS
         )
+
+        painter.setBrush(Qt.NoBrush)
+
         # draw node value centered
         val = str(node.value)
         fm = painter.fontMetrics()
