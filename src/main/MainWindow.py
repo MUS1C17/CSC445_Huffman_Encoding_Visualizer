@@ -35,7 +35,8 @@ class MainWindow(QMainWindow):
         # Create a text box and add it to the layout
         self.textBox = TextBox()
         self.textBox.setPlaceholderText("Enter your text here:")
-        self.textBox.setFixedSize(700, 300)
+        self.textBox.setMinimumHeight(300)
+        self.textBox.setMaximumWidth(1500)
         self.topHorizontalPanel.addWidget(self.textBox)
 
         #Create Button
@@ -60,7 +61,7 @@ class MainWindow(QMainWindow):
         self.encodedTextBox.setPlaceholderText("Encoded bits will appear here…")
         self.encodedTextBox.setLineWrapMode(QPlainTextEdit.NoWrap)
         self.encodedTextBox.setMinimumHeight(50)
-        self.encodedTextBox.setMaximumWidth(700)
+        self.encodedTextBox.setMaximumWidth(1500)
         self.encodedPanel.addWidget(self.encodedTextBox)
     
         #Create Encode button
