@@ -1,26 +1,22 @@
-from PyQt5.QtWidgets import QTextEdit
+from PyQt5.QtWidgets import QPlainTextEdit
 from PyQt5.QtGui import QPixmap, QPainter, QCursor, QColor,QPen
 from PyQt5.QtCore import Qt, QEvent, QTimer
-class TextBox(QTextEdit):
+class PlainTextEdit(QPlainTextEdit):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.setStyleSheet(f"""
+            QPlainTextEdit {{
+                border: 2px solid #12130F; 
+                border-radius: 15px;
+                background-color: #7A9CC6;
+                padding: 5px;
+                border-color: #12130F;
+            }}
+            QPlainTextEdit::viewpot {{
+                border: 1px solid #7A9CC6;
+            }}
+        """)
 
-        self.setStyleSheet("""
-                QTextEdit { 
-                           border: 2px solid;
-                           border-color: #12130F;
-                            border-radius: 15px;
-                            background: #7A9CC6; 
-                            padding: 0px;             
-                            margin: 0px;
-                           }
-                QTextEdit::viewport {
-                           border-radius: 15px;
-                            background-color: white;
-                            margin: 0px;
-                           }
-            """)
-        
          # --- Custom Mouse Cursor ---
         self.default_cursor = self.cursor()
         self.custom_mouse_cursor = self.create_custom_text_ibeam_cursor()

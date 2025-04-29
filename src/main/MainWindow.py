@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QHBoxLayout, QTableWidget, QTableWidgetItem, QHeaderView, QLineEdit, QFileDialog, QMessageBox, QAbstractItemView
+from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QHBoxLayout, QTableWidget, QTableWidgetItem, QHeaderView, QLineEdit, QFileDialog, QMessageBox, QAbstractItemView,  QPlainTextEdit
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QScrollArea
 from PyQt5.QtCore import Qt
@@ -9,6 +9,9 @@ from HuffmanTableGenerator import *
 from LinkedBinaryTree import *
 from PyQt5.QtWidgets import QSizePolicy
 from ScrollableTreeWidget import *
+from Table import *
+from PlainTextEdit import *
+from LineEdit import *
 
 class MainWindow(QMainWindow):
     '''This is a MainWindow class for front end.
@@ -19,19 +22,21 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("Huffman Encoding Visualizer")
         self.setGeometry(600, 300, 900, 700)
-        self.setStyleSheet("background-color: #8FCB9B;")
+        self.setStyleSheet("background-color: #9FBBCC;")
 
         # Create a central widget and a layout
         self.centralWidget= QWidget()
         self.mainPanel = QVBoxLayout(self.centralWidget)
         self.topHorizontalPanel = QHBoxLayout()
         self.middleHorizontalPanel = QHBoxLayout()
+        self.encodedPanel = QHBoxLayout()
         self.bottomHorizontalPanel = QHBoxLayout()
         
         # Create a text box and add it to the layout
         self.textBox = TextBox()
         self.textBox.setPlaceholderText("Enter your text here:")
-        self.textBox.setFixedSize(700, 300)
+        self.textBox.setMinimumHeight(300)
+        self.textBox.setMaximumWidth(1500)
         self.topHorizontalPanel.addWidget(self.textBox)
 
         #Create Button
@@ -41,7 +46,7 @@ class MainWindow(QMainWindow):
         # Set the central widget for the main window
 
         #Create File upload
-        self.filePathLine = QLineEdit()
+        self.filePathLine = LineEdit()
         self.filePathLine.setReadOnly(True)
         self.middleHorizontalPanel.addWidget(self.filePathLine)
 
@@ -50,15 +55,32 @@ class MainWindow(QMainWindow):
         self.fileUploadButton.clicked.connect(self.uploadFile)
         self.middleHorizontalPanel.addWidget(self.fileUploadButton)
 
+        #Create QPlainTextEdit
+        self.encodedTextBox = PlainTextEdit()
+        self.encodedTextBox.setReadOnly(True)
+        self.encodedTextBox.setPlaceholderText("Encoded bits will appear here…")
+        self.encodedTextBox.setLineWrapMode(QPlainTextEdit.NoWrap)
+        self.encodedTextBox.setMinimumHeight(50)
+        self.encodedTextBox.setMaximumWidth(1500)
+        self.encodedPanel.addWidget(self.encodedTextBox)
+    
+        #Create Encode button
+        self.showOriginalButton = Button("Encode")
+        self.showOriginalButton.clicked.connect(self.onShowOriginal)
+        self.encodedPanel.addWidget(self.showOriginalButton)
 
         self.mainPanel.addLayout(self.topHorizontalPanel)
         self.mainPanel.addLayout(self.middleHorizontalPanel)
+        self.mainPanel.addLayout(self.encodedPanel)
         self.mainPanel.addLayout(self.bottomHorizontalPanel)
-        
+
         self.setCentralWidget(self.centralWidget)
+        self.currentInputText = ""
 
     def generateHuffmanTableWidget(self, text):
         self.clearBottomPanel()
+        self.currentInputText = text
+
         if len(text) != 0:
             self.huffmanTableGenerator = HuffmanTableGenerator()
 
@@ -69,28 +91,9 @@ class MainWindow(QMainWindow):
             frequencies = list(freq_dict.values())
             rowCount = len(characters)
 
-            self.huffmanTableWidget = QTableWidget(rowCount, 3)
-            self.huffmanTableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
-
-            #Create columns and name them accordingly
-            self.huffmanTableWidget.setColumnCount(3)
+            self.huffmanTableWidget = Table(rowCount, 3)
             self.huffmanTableWidget.setHorizontalHeaderLabels(["Charcter", "Frequency", "Code"])
-        
-            #Hide vertical headers
-            self.huffmanTableWidget.verticalHeader().hide()
 
-            # Column sizing: char/freq auto, code fixed for 8 chars
-            header = self.huffmanTableWidget.horizontalHeader()
-            header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
-            header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
-            avg_char_w = self.huffmanTableWidget.fontMetrics().averageCharWidth()
-            code_width = avg_char_w * 8 + 20
-            header.resizeSection(2, int(code_width))
-
-            # Size policy to hug contents
-            self.huffmanTableWidget.setSizePolicy(
-                QSizePolicy.Minimum, QSizePolicy.Preferred
-            )
 
             self.bottomHorizontalPanel.addWidget(self.huffmanTableWidget)
             # Build tree and codes
@@ -110,10 +113,24 @@ class MainWindow(QMainWindow):
                 self.huffmanTableWidget.setItem(
                     row, 2, QTableWidgetItem(code)
                 )
+            
+            header = self.huffmanTableWidget.horizontalHeader()
+            col_count = self.huffmanTableWidget.columnCount()
+            total_col_w = sum(header.sectionSize(i) for i in range(col_count))
+            vert_header_w = self.huffmanTableWidget.verticalHeader().width()
+            frame_w = self.huffmanTableWidget.frameWidth() * 2
+
+            max_table_w = total_col_w + vert_header_w + frame_w
+
+            # Now set that as the hard maximum
+            self.huffmanTableWidget.setMaximumWidth(max_table_w)
 
             # Create and add tree widget
             scroll_tree = create_scrollable_tree(root)
             self.bottomHorizontalPanel.addWidget(scroll_tree)
+
+            encoded_bits = "".join(codes.get(ch, "") for ch in text)
+            self.encodedTextBox.setPlainText(encoded_bits)
 
 
     def fillHuffmanTableWidgetWithData(self):
@@ -167,6 +184,10 @@ class MainWindow(QMainWindow):
             if widget:
                 # this removes it from the GUI and schedules it for deletion
                 widget.setParent(None)
+
+    def onShowOriginal(self):
+        """Replace the bit-string with the original text."""
+        self.encodedTextBox.setPlainText(self.currentInputText)
 
 def main():
     mainApp = QApplication(sys.argv)

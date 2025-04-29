@@ -11,50 +11,6 @@ class Button(QPushButton):
         super().__init__(parent)
 
         self.original_geom = None
-
-        '''TODO: For some reason it is very difficult to make a button round
-        so this is a note to finish it later here:'''
-        self.setStyleSheet("""
-                QPushButton{
-                           border: 2px solid;
-                           border-color: #12130F;
-                           border-radius 25px;
-                           background: #5B9279;
-                           }
-                            """)
-        self.clicked.connect(self.animateButton)
-
-    '''def animateButton(self):
-         # Save the button's current geometry (if not already saved).
-        if self.original_geom is None:
-            self.original_geom = self.geometry()
-
-        original_geom = self.geometry()
-        shrink_factor = 0.9
-        new_width = int(original_geom.width() * shrink_factor)
-        new_height = int(original_geom.height() * shrink_factor)
-        delta_w = (original_geom.width() - new_width) // 2
-        delta_h = (original_geom.height() - new_height) // 2
-        
-        # Create a smaller geometry centered on the original.
-        smaller_geom = QRect(
-            original_geom.x() + delta_w,
-            original_geom.y() + delta_h,
-            new_width,
-            new_height
-        )
-        
-        # Animate geometry from original to smaller and back.
-        self.anim = QPropertyAnimation(self, b"geometry")
-        self.anim.setDuration(150)  # duration in milliseconds
-        self.anim.setStartValue(original_geom)
-        self.anim.setKeyValueAt(0.5, smaller_geom)
-        self.anim.setEndValue(original_geom)
-        self.anim.setEasingCurve(QEasingCurve.InOutQuad)
-        self.anim.start()'''
-    
-    def __init__(self, parent=None):
-        super().__init__(parent)
         self.shadow = QtWidgets.QGraphicsDropShadowEffect()
         self.setGraphicsEffect(self.shadow)
         self.tm = QtCore.QBasicTimer()
@@ -81,6 +37,26 @@ class Button(QPushButton):
         self.gradding_bg_seq = self.gradeColor( c1=self.init_bg_color, 
 									        	c2=self.end_bg_color, 
 									        	steps=self.maxGrade)
+
+        '''TODO: For some reason it is very difficult to make a button round
+        so this is a note to finish it later here:'''
+        self.setStyleSheet("""
+            QPushButton {
+                border: 2px solid #12130F;
+                border-radius: 15px;
+                background-color: #7A9CC6;
+                color: black;
+                padding: 8px 4px;
+            }
+            QPushButton:hover {
+                background-color: #3A79C0;
+            }
+            QPushButton:pressed {
+                background-color: #1E4F83;
+            }
+        """)
+        #self.clicked.connect(self.animateButton)
+
 
     def changeColor(self, color=(255,255,255)):
         palette = self.palette()
